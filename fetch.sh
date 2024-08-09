@@ -16,7 +16,11 @@ kernel() {
 machine() {
   VERSION=$(cat /sys/devices/virtual/dmi/id/product_version)
   NAME=$(cat /sys/devices/virtual/dmi/id/product_name)
-  echo "$NAME $VERSION"
+  if [ -n "$VERSION" ] && [ -n "$NAME" ]; then
+    echo "$NAME $VERSION"
+  else
+    echo "N/A"
+  fi
 }
 
 up() {
@@ -101,11 +105,21 @@ pkgs() {
 }
 
 cpu() {
-  awk -F ': ' '/model name/ {print $2}' /proc/cpuinfo | head -n1
+  CPU=$(awk -F ': ' '/model name/ {print $2}' /proc/cpuinfo | head -n1)
+  if [ -n "$CPU" ]; then
+    echo $CPU
+  else
+    echo "N/A"
+  fi
 }
 
 gpu() {
-  lspci | grep -E 'VGA|3D' | awk -F ': ' '{print $2}'
+  GPU=$(lspci | grep -E 'VGA|3D' | awk -F ': ' '{print $2}')
+  if [ -n "$GPU" ]; then
+    echo $GPU
+  else
+    echo "N/A"
+  fi
 }
 
 mem() {
@@ -141,9 +155,13 @@ main() {
     OPTIONS="$R\033[${COLOR_KEY}m%-10s$R \033[${COLOR_COLON}m:$R\033[${COLOR_VALUE}m "
   fi
   
-  HOST=$(cat /proc/sys/kernel/hostname)
-  printf "$OPTIONS_HEAD" "" $USER $HOST 
-  
+  HOSTNAME=$(hostname)
+  USERNAME=$(whoami)
+  if [ -f /proc/sys/kernel/hostname ]; then
+    HOSTNAME=$(cat /proc/sys/kernel/hostname)
+  fi
+  printf "$OPTIONS_HEAD" "" ${USERNAME:-"user"} ${HOSTNAME:-"host"}
+    
   printf "$OPTIONS" "Distro"; os
   printf "$OPTIONS" "Kernel"; kernel
   printf "$OPTIONS" "Machine"; machine
@@ -163,4 +181,4 @@ main() {
   echo -e "$R"
 }
 
-main $1
+main $1 2> /dev/null
