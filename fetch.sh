@@ -20,7 +20,7 @@ machine() {
   VERSION=$(cat /sys/devices/virtual/dmi/id/product_version)
   MODEL=$(cat /sys/firmware/devicetree/base/model)
   if [ -n "$MODEL" ] || [ -n "$VERSION" ] || [ -n "$NAME" ]; then
-    echo "$NAME $VERSION $MODEL"
+    echo "$NAME $VERSION $MODEL" | awk '{$1=$1};1' | tr -s ' '
   else
     echo "N/A"
   fi
