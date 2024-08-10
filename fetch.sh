@@ -145,6 +145,9 @@ log() {
   VAL=$(eval $2)
   if [ ! "$VAL" = "N/A" ]; then
     printf "$OPTIONS" "$1"; echo "$VAL"
+    return 0
+  else
+    return 1
   fi
 }
 
@@ -174,22 +177,25 @@ main() {
   fi
   printf "$OPTIONS_HEAD" "" ${USERNAME:-"user"} ${HOSTNAME:-"host"}
     
-  log "Distro" "os"
-  log "Kernel" "kernel"
-  log "Machine" "machine"
-  log "Uptime" "up"
-  echo
+  ANY_OUTPUT=0
+  if log "Distro" "os"; then ANY_OUTPUT=1; fi
+  if log "Kernel" "kernel"; then ANY_OUTPUT=1; fi
+  if log "Machine" "machine"; then ANY_OUTPUT=1; fi
+  if log "Uptime" "up"; then ANY_OUTPUT=1; fi
+  [ $ANY_OUTPUT -eq 1 ] && echo
   
-  log "Desktop" "desktop"
-  log "Shell" "shell"
-  log "Resolution" "resolution"
-  log "Packages" "pkgs"
-  echo
+  ANY_OUTPUT=0
+  if log "Desktop" "desktop"; then ANY_OUTPUT=1; fi
+  if log "Shell" "shell"; then ANY_OUTPUT=1; fi
+  if log "Resolution" "resolution"; then ANY_OUTPUT=1; fi
+  if log "Packages" "pkgs"; then ANY_OUTPUT=1; fi
+  [ $ANY_OUTPUT -eq 1 ] && echo
   
-  log "CPU" "cpu"
-  log "GPU" "gpu"
-  log "Memory" "mem"
-  log "Disk" "disk"
+  ANY_OUTPUT=0
+  if log "CPU" "cpu"; then ANY_OUTPUT=1; fi
+  if log "GPU" "gpu"; then ANY_OUTPUT=1; fi
+  if log "Memory" "mem"; then ANY_OUTPUT=1; fi
+  if log "Disk" "disk"; then ANY_OUTPUT=1; fi
   printf "$R"
 }
 
