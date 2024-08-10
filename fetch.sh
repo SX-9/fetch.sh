@@ -4,20 +4,23 @@ os() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
     echo $NAME
+  elif [ -d /system/app ] && [ -d /system/priv-app ]; then
+    echo "Android $(getprop ro.build.version.release)"
   else
     echo "N/A"
   fi
 }
 
 kernel() {
-  uname -r
+  uname -rm
 }
 
 machine() {
-  VERSION=$(cat /sys/devices/virtual/dmi/id/product_version)
   NAME=$(cat /sys/devices/virtual/dmi/id/product_name)
-  if [ -n "$VERSION" ] && [ -n "$NAME" ]; then
-    echo "$NAME $VERSION"
+  VERSION=$(cat /sys/devices/virtual/dmi/id/product_version)
+  MODEL=$(cat /sys/firmware/devicetree/base/model)
+  if [ -n "$MODEL" ] || [ -n "$VERSION" ] || [ -n "$NAME" ]; then
+    echo "$NAME $VERSION $MODEL"
   else
     echo "N/A"
   fi
@@ -138,6 +141,13 @@ disk() {
   df -h / | awk 'NR==2 {printf "%.2fGiB of %.2fGiB (%s, /)\n", $3, $2, $5}'
 }
 
+log() {
+  VAL=$(eval $2)
+  if [ ! "$VAL" = "N/A" ]; then
+    printf "$OPTIONS" "$1"; echo "$VAL"
+  fi
+}
+
 main() {
   COLOR_KEY="94"
   COLOR_VALUE="97"
@@ -155,30 +165,32 @@ main() {
     OPTIONS="$R\033[${COLOR_KEY}m%-10s$R \033[${COLOR_COLON}m:$R\033[${COLOR_VALUE}m "
   fi
   
-  HOSTNAME=$(hostname)
-  USERNAME=$(whoami)
+  HOSTNAME=${HOSTNAME:-${hostname:-$(hostname)}}
+  USERNAME=${USER:-$(id -un)}
   if [ -f /proc/sys/kernel/hostname ]; then
     HOSTNAME=$(cat /proc/sys/kernel/hostname)
+  elif [ -f /etc/hostname ]; then
+    HOSTNAME=$(< /etc/hostname)
   fi
   printf "$OPTIONS_HEAD" "" ${USERNAME:-"user"} ${HOSTNAME:-"host"}
     
-  printf "$OPTIONS" "Distro"; os
-  printf "$OPTIONS" "Kernel"; kernel
-  printf "$OPTIONS" "Machine"; machine
-  printf "$OPTIONS" "Uptime"; up
+  log "Distro" "os"
+  log "Kernel" "kernel"
+  log "Machine" "machine"
+  log "Uptime" "up"
   echo
   
-  printf "$OPTIONS" "Desktop"; desktop
-  printf "$OPTIONS" "Shell"; shell
-  printf "$OPTIONS" "Resolution"; resolution
-  printf "$OPTIONS" "Packages"; pkgs
+  log "Desktop" "desktop"
+  log "Shell" "shell"
+  log "Resolution" "resolution"
+  log "Packages" "pkgs"
   echo
   
-  printf "$OPTIONS" "CPU"; cpu
-  printf "$OPTIONS" "GPU"; gpu
-  printf "$OPTIONS" "Memory"; mem
-  printf "$OPTIONS" "Disk"; disk
-  echo -e "$R"
+  log "CPU" "cpu"
+  log "GPU" "gpu"
+  log "Memory" "mem"
+  log "Disk" "disk"
+  printf "$R"
 }
 
 main $1 2> /dev/null
