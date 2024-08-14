@@ -143,7 +143,7 @@ disk() {
 
 log() {
   VAL=$(eval $2)
-  if [ ! "$VAL" = "N/A" ]; then
+  if [ -n "$VAL" ] && [ ! "$VAL" = "N/A" ]; then
     printf "$OPTIONS" "$1"; echo "$VAL"
     return 0
   else
