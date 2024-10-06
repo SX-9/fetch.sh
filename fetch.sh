@@ -95,7 +95,7 @@ pkgs() {
     OUTPUT="${OUTPUT}xbps($XBPS) "
   fi
 
-  if [ -f /bin/nix-store ]; then
+  if [ -f /run/current-system/sw/bin/nix-store ]; then
     NIX="$(nix-store -q --requisites /run/current-system/sw | wc -l)"
     OUTPUT="${OUTPUT}nix($NIX)"
   fi
