@@ -27,7 +27,8 @@ machine() {
 }
 
 up() {
-  uptime -p
+  OUT=$(cut -d ' ' -f 1 /proc/uptime)
+  echo "$OUT seconds"
 }
 
 desktop() {
@@ -50,8 +51,8 @@ shell() {
 }
 
 resolution() {
-  if [ -f /usr/bin/xrandr ]; then
-    RES="$(xrandr | awk '/\*/ {print $1}')"
+  if [ -n "$(command -v xrandr)" ]; then
+     RES="$(xrandr | awk '/\*/ {print $1}')"
     if [ -n "$RES" ]; then
       echo $RES
     else
@@ -97,7 +98,7 @@ pkgs() {
 
   if [ -f /run/current-system/sw/bin/nix-store ]; then
     NIX="$(nix-store -q --requisites /run/current-system/sw | wc -l)"
-    OUTPUT="${OUTPUT}nix($NIX)"
+    OUTPUT="${OUTPUT}nix($NIX) "
   fi
 
   if [ -n "$OUTPUT" ]; then
