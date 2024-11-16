@@ -2,7 +2,7 @@
 a simple fetch utility
 writen in `/bin/sh` made to be as simple as possible
 
-![image](https://github.com/user-attachments/assets/7a68d0ed-328e-4887-a471-4b7146898f66)
+![image](https://github.com/user-attachments/assets/a75eb3ca-715c-4ecb-a6b0-c9e907b4fc39)
 
 ```sh
 curl -sSL https://raw.githubusercontent.com/SX-9/fetch.sh/refs/heads/master/fetch.sh | sh -s -- color
