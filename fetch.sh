@@ -28,7 +28,11 @@ machine() {
 
 up() {
   OUT=$(cut -d ' ' -f 1 /proc/uptime)
-  echo "$OUT seconds"
+  if [ -n "$OUT" ]; then
+    echo "$OUT seconds"
+  else
+    echo "N/A"
+  fi
 }
 
 desktop() {
@@ -111,7 +115,7 @@ pkgs() {
 cpu() {
   CPU=$(awk -F ': ' '/model name/ {print $2}' /proc/cpuinfo | head -n1)
   if [ -n "$CPU" ]; then
-    echo $CPU
+    echo "$CPU ($(nproc))"
   else
     echo "N/A"
   fi
