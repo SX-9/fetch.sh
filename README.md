@@ -5,7 +5,7 @@ writen in `/bin/sh` made to be as simple as possible
 ![image](ss.png)
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/SX-9/fetch.sh/refs/heads/master/fetch.sh | sh -s -- color
+curl -fsSL fetch.satr14.my.id | sh -s -- color
 ```
 
 ## Usage
