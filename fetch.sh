@@ -1,5 +1,7 @@
 #! /bin/sh
 
+# curl -fsSL fetch.satr14.my.id | sh -s -- color
+
 os() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
