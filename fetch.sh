@@ -117,7 +117,7 @@ pkgs() {
 cpu() {
   CPU=$(awk -F ': ' '/model name/ {print $2}' /proc/cpuinfo | head -n1)
   if [ -n "$CPU" ]; then
-    echo "$CPU ($(nproc))"
+    echo "$CPU ($(nproc)/$(nproc --all))"
   else
     echo "N/A"
   fi
