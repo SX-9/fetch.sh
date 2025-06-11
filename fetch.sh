@@ -124,7 +124,7 @@ cpu() {
 }
 
 gpu() {
-  GPU=$(lspci | grep -E 'VGA|3D' | awk -F ': ' '{print $2}')
+  GPU=$(lspci | grep -E 'VGA|3D' | cut -d ':' -f3)
   if [ -n "$GPU" ]; then
     echo $GPU
   else
@@ -168,12 +168,24 @@ main() {
   R=""
   OPTIONS_HEAD="%-12s %s@%s\n"
   OPTIONS="%-10s : "
-  
-  if [ "$1" = "color" ]; then 
-    R="\033[0m"
-    OPTIONS_HEAD="%-12s \033[${COLOR_IDENT}m%s$R\033[${COLOR_AT}m@$R\033[${COLOR_IDENT}m%s$R\n"
-    OPTIONS="$R\033[${COLOR_KEY}m%-10s$R \033[${COLOR_COLON}m:$R\033[${COLOR_VALUE}m "
-  fi
+
+  L_VALUE=""
+  while getopts "cs:l:" opt; do
+    case $opt in
+      c)
+        R="\033[0m"
+        OPTIONS_HEAD="%-12s \033[${COLOR_IDENT}m%s$R\033[${COLOR_AT}m@$R\033[${COLOR_IDENT}m%s$R\n"
+        OPTIONS="$R\033[${COLOR_KEY}m%-10s$R \033[${COLOR_COLON}m:$R\033[${COLOR_VALUE}m "
+        ;;
+      l)
+        $OPTARG
+        ;;
+      *)
+        echo "Usage: $0 [-c] [-l value]"
+        exit 1
+        ;;
+    esac
+  done
   
   HOSTNAME=${HOSTNAME:-${hostname:-$(hostname)}}
   USERNAME=${USER:-$(id -un)}
